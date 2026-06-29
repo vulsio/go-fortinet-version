@@ -6,7 +6,7 @@ package version
 
 import core "github.com/vulsio/go-fortinet-version/internal/core"
 
-// ErrIncomparable mirrors core.ErrIncomparable. A numeric version is totally
+// ErrIncomparable mirrors core.ErrIncomparable. Numeric versions are totally
 // ordered, so Compare never returns it; it is exported only so callers can
 // classify errors uniformly with the nonnumeric package.
 var ErrIncomparable = core.ErrIncomparable
@@ -29,8 +29,9 @@ func NewVersion(ver string) (Version, error) {
 }
 
 // Compare returns -1, 0, or +1 for v < o, v == o, v > o, with trailing zeros a
-// no-op (7.2 == 7.2.0). The error is always nil (numeric versions are totally
-// ordered); the signature mirrors the nonnumeric package.
+// no-op (7.2 == 7.2.0). Numeric versions are totally ordered, so it never
+// returns ErrIncomparable; it does return an error if either operand is the
+// zero value (built without NewVersion).
 func (v Version) Compare(o Version) (int, error) {
 	return v.v.Compare(o.v)
 }

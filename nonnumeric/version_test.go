@@ -87,3 +87,16 @@ func TestVersion_Compare(t *testing.T) {
 		})
 	}
 }
+
+func TestVersion_CompareZeroValue(t *testing.T) {
+	v, err := version.NewVersion("25.2.a")
+	if err != nil {
+		t.Fatalf("NewVersion: %v", err)
+	}
+	if _, err := (version.Version{}).Compare(v); err == nil {
+		t.Error("Compare with zero-value receiver: want error, got nil")
+	}
+	if _, err := v.Compare(version.Version{}); err == nil {
+		t.Error("Compare against zero-value arg: want error, got nil")
+	}
+}
