@@ -43,7 +43,9 @@ func (v Version) Compare(o Version) (int, error) {
 	return v.v.Compare(o.v)
 }
 
-// String reformats the parsed version (canonical, dot-separated).
+// String renders the parsed version as a dot-separated string, reflecting the
+// components verbatim. Trailing zeros are not normalized, so 7.2 and 7.2.0
+// render differently even though they compare equal.
 func (v Version) String() string {
 	return v.v.String()
 }

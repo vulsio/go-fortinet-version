@@ -115,7 +115,9 @@ func tailSign(comps []component) int {
 	return 0
 }
 
-// String reformats the parsed version (canonical, dot-separated).
+// String renders the parsed version as a dot-separated string, reflecting the
+// components verbatim. It does not normalize trailing zeros, so two versions
+// that compare equal (e.g. 7.2 and 7.2.0) can render differently.
 func (v Version) String() string {
 	ss := make([]string, len(v.components))
 	for i, c := range v.components {

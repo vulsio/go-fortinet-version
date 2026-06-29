@@ -9,24 +9,43 @@ two packages (each its own type, so the scheme is enforced at parse time):
   (`25.2.a`, `25.1.a.2`).
 
 ```go
+package main
+
 import (
-	"github.com/vulsio/go-fortinet-version/numeric"
+	"fmt"
+	"log"
+
 	"github.com/vulsio/go-fortinet-version/nonnumeric"
+	"github.com/vulsio/go-fortinet-version/numeric"
 )
 
-a, _ := numeric.NewVersion("7.4.3")
-b, _ := numeric.NewVersion("7.4.10")
-n, _ := a.Compare(b) // -1  (7.4.3 < 7.4.10)
+func main() {
+	a, err := numeric.NewVersion("7.4.3")
+	if err != nil {
+		log.Fatal(err)
+	}
+	b, err := numeric.NewVersion("7.4.10")
+	if err != nil {
+		log.Fatal(err)
+	}
+	n, err := a.Compare(b)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(n) // -1  (7.4.3 < 7.4.10)
 
-// trailing zeros are a no-op
-c, _ := numeric.NewVersion("7.2.0")
-d, _ := numeric.NewVersion("7.2")
-_, _ = c.Compare(d) // 0
+	// trailing zeros are a no-op
+	c, _ := numeric.NewVersion("7.2.0")
+	d, _ := numeric.NewVersion("7.2")
+	n, _ = c.Compare(d)
+	fmt.Println(n) // 0
 
-// FortiSASE milestone letters: a bare train precedes its milestone builds
-s, _ := nonnumeric.NewVersion("25.2")
-m, _ := nonnumeric.NewVersion("25.2.a")
-_, _ = s.Compare(m) // -1
+	// FortiSASE milestone letters: a bare train precedes its milestone builds
+	s, _ := nonnumeric.NewVersion("25.2")
+	m, _ := nonnumeric.NewVersion("25.2.a")
+	n, _ = s.Compare(m)
+	fmt.Println(n) // -1
+}
 ```
 
 Each package exposes `NewVersion(string) (Version, error)`,
