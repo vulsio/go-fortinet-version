@@ -23,6 +23,7 @@ func TestNewVersion(t *testing.T) {
 		{name: "trailing dot", ver: "7.2.", wantErr: true},
 		{name: "signed component", ver: "7.-1", wantErr: true},
 		{name: "plus-signed component", ver: "7.+0", wantErr: true},
+		{name: "underscore component", ver: "7.1_2", wantErr: true},
 		{name: "build suffix", ver: "7.1-b5955", wantErr: true},
 	}
 	for _, tt := range tests {
