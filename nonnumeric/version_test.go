@@ -62,6 +62,10 @@ func TestVersion_Compare(t *testing.T) {
 		{name: "numeric letter-patch ordering (25.1.a.2 < 25.1.a.10)", v1: "25.1.a.2", v2: "25.1.a.10", want: -1},
 		{name: "nested milestone above bare train (25.1.a.2 > 25.1)", v1: "25.1.a.2", v2: "25.1", want: 1},
 		{name: "numeric vs milestone at same position → incomparable (1.2.1 vs 1.2.a)", v1: "1.2.1", v2: "1.2.a", wantErr: true},
+		// An explicit numeric build (even 0) opposite a milestone letter is
+		// incomparable: the trailing-zero no-op applies to an absent component
+		// (25.2 < 25.2.a), not to a present 0 sitting at a letter's position.
+		{name: "numeric zero build vs milestone at same position → incomparable (25.2.0 vs 25.2.a)", v1: "25.2.0", v2: "25.2.a", wantErr: true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
