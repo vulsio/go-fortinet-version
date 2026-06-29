@@ -35,15 +35,31 @@ func main() {
 	fmt.Println(n) // -1  (7.4.3 < 7.4.10)
 
 	// trailing zeros are a no-op
-	c, _ := numeric.NewVersion("7.2.0")
-	d, _ := numeric.NewVersion("7.2")
-	n, _ = c.Compare(d)
+	c, err := numeric.NewVersion("7.2.0")
+	if err != nil {
+		log.Fatal(err)
+	}
+	d, err := numeric.NewVersion("7.2")
+	if err != nil {
+		log.Fatal(err)
+	}
+	if n, err = c.Compare(d); err != nil {
+		log.Fatal(err)
+	}
 	fmt.Println(n) // 0
 
 	// FortiSASE milestone letters: a bare train precedes its milestone builds
-	s, _ := nonnumeric.NewVersion("25.2")
-	m, _ := nonnumeric.NewVersion("25.2.a")
-	n, _ = s.Compare(m)
+	s, err := nonnumeric.NewVersion("25.2")
+	if err != nil {
+		log.Fatal(err)
+	}
+	m, err := nonnumeric.NewVersion("25.2.a")
+	if err != nil {
+		log.Fatal(err)
+	}
+	if n, err = s.Compare(m); err != nil {
+		log.Fatal(err)
+	}
 	fmt.Println(n) // -1
 }
 ```
