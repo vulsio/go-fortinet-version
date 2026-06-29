@@ -42,7 +42,10 @@ type component struct {
 	letter byte
 }
 
-// Version is a parsed Fortinet version.
+// Version is a parsed Fortinet version. Always construct it with NewVersion;
+// the zero value is not a valid version (it has no components, so String
+// returns "" and Compare against it is meaningless), and methods assume the
+// components were validated by NewVersion.
 type Version struct {
 	components []component
 }
