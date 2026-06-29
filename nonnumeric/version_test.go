@@ -50,6 +50,7 @@ func TestVersion_Compare(t *testing.T) {
 		wantErr bool // expect ErrIncomparable
 	}{
 		{name: "numeric v1 < v2", v1: "7.0.0", v2: "7.0.1", want: -1},
+		{name: "numeric v1 > v2", v1: "7.0.1", v2: "7.0.0", want: 1},
 		{name: "trailing zero stays equal (7.2.0 == 7.2)", v1: "7.2.0", v2: "7.2", want: 0},
 		{name: "bare train below its milestone build (25.2 < 25.2.a)", v1: "25.2", v2: "25.2.a", want: -1},
 		{name: "milestone above its bare train (25.2.a > 25.2)", v1: "25.2.a", v2: "25.2", want: 1},
