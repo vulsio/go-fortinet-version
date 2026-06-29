@@ -89,12 +89,12 @@ func (v Version) Compare(o Version) (int, error) {
 		ca, cb := a[i], b[i]
 		switch {
 		case ca.kind == kindNumber && cb.kind == kindNumber:
-			if ca.number != cb.number {
-				return cmp.Compare(ca.number, cb.number), nil
+			if ret := cmp.Compare(ca.number, cb.number); ret != 0 {
+				return ret, nil
 			}
 		case ca.kind == kindLetter && cb.kind == kindLetter:
-			if ca.letter != cb.letter {
-				return cmp.Compare(ca.letter, cb.letter), nil
+			if ret := cmp.Compare(ca.letter, cb.letter); ret != 0 {
+				return ret, nil
 			}
 		default:
 			return 0, ErrIncomparable
