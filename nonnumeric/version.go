@@ -1,9 +1,9 @@
-// Package version parses and compares non-numeric Fortinet versions — the
+// Package nonnumeric parses and compares non-numeric Fortinet versions — the
 // FortiSASE milestone-letter scheme, where a component may be a single
 // lowercase letter (a < b < c) as well as a number (e.g. 25.2.a, 25.1.a.2).
 // Use the numeric package for the purely numeric scheme every other product
 // uses.
-package version
+package nonnumeric
 
 import core "github.com/vulsio/go-fortinet-version/internal/core"
 

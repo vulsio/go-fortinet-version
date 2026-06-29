@@ -1,9 +1,9 @@
-package version_test
+package numeric_test
 
 import (
 	"testing"
 
-	version "github.com/vulsio/go-fortinet-version/numeric"
+	"github.com/vulsio/go-fortinet-version/numeric"
 )
 
 func TestNewVersion(t *testing.T) {
@@ -27,7 +27,7 @@ func TestNewVersion(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			v, err := version.NewVersion(tt.ver)
+			v, err := numeric.NewVersion(tt.ver)
 			if (err != nil) != tt.wantErr {
 				t.Fatalf("NewVersion(%q) error = %v, wantErr %v", tt.ver, err, tt.wantErr)
 			}
@@ -57,11 +57,11 @@ func TestVersion_Compare(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			v1, err := version.NewVersion(tt.v1)
+			v1, err := numeric.NewVersion(tt.v1)
 			if err != nil {
 				t.Fatalf("NewVersion(%q): %v", tt.v1, err)
 			}
-			v2, err := version.NewVersion(tt.v2)
+			v2, err := numeric.NewVersion(tt.v2)
 			if err != nil {
 				t.Fatalf("NewVersion(%q): %v", tt.v2, err)
 			}
@@ -77,14 +77,14 @@ func TestVersion_Compare(t *testing.T) {
 }
 
 func TestVersion_CompareZeroValue(t *testing.T) {
-	v, err := version.NewVersion("7.0.0")
+	v, err := numeric.NewVersion("7.0.0")
 	if err != nil {
 		t.Fatalf("NewVersion: %v", err)
 	}
-	if _, err := (version.Version{}).Compare(v); err == nil {
+	if _, err := (numeric.Version{}).Compare(v); err == nil {
 		t.Error("Compare with zero-value receiver: want error, got nil")
 	}
-	if _, err := v.Compare(version.Version{}); err == nil {
+	if _, err := v.Compare(numeric.Version{}); err == nil {
 		t.Error("Compare against zero-value arg: want error, got nil")
 	}
 }

@@ -1,8 +1,8 @@
-// Package version parses and compares purely numeric Fortinet versions
+// Package numeric parses and compares purely numeric Fortinet versions
 // (e.g. 7.4.3, or a release train 7.2) — the scheme almost every Fortinet
 // product uses. A milestone letter is rejected at parse time; use the
 // nonnumeric package for FortiSASE-style versions (25.2.a).
-package version
+package numeric
 
 import core "github.com/vulsio/go-fortinet-version/internal/core"
 
