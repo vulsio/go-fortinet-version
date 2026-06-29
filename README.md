@@ -14,13 +14,19 @@ import (
 	"github.com/vulsio/go-fortinet-version/nonnumeric"
 )
 
-a, _ := numeric.NewVersion("7.2.0")
-b, _ := numeric.NewVersion("7.2")
-n, _ := a.Compare(b) // 0  (trailing zero is a no-op)
+a, _ := numeric.NewVersion("7.4.3")
+b, _ := numeric.NewVersion("7.4.10")
+n, _ := a.Compare(b) // -1  (7.4.3 < 7.4.10)
 
+// trailing zeros are a no-op
+c, _ := numeric.NewVersion("7.2.0")
+d, _ := numeric.NewVersion("7.2")
+_, _ = c.Compare(d) // 0
+
+// FortiSASE milestone letters: a bare train precedes its milestone builds
 s, _ := nonnumeric.NewVersion("25.2")
 m, _ := nonnumeric.NewVersion("25.2.a")
-k, _ := s.Compare(m) // -1 (a bare train precedes its milestone builds)
+_, _ = s.Compare(m) // -1
 ```
 
 Each package exposes `NewVersion(string) (Version, error)`,
