@@ -1,17 +1,13 @@
-// Package version parses and compares Fortinet product version strings.
+// Package core holds the shared Fortinet version parsing and comparison used by
+// the numeric and nonnumeric packages. It is internal; depend on
+// github.com/vulsio/go-fortinet-version/numeric or .../nonnumeric instead.
 //
-// A Fortinet version is a "."-separated list of components, each either an
-// unsigned integer or a single lowercase milestone letter. Almost every product
-// is purely numeric (e.g. 7.4.3, or a release train 7.2); FortiSASE labels
-// releases with a milestone-letter scheme that carries an alphabetic component
-// (e.g. 25.2.a, 25.1.a.2), which plain semver cannot represent.
-//
-// The two schemes share one comparison algorithm: a numeric component and a
-// milestone letter meeting at the same position have no defined cross-scheme
-// order, so Compare reports ErrIncomparable rather than guessing. Callers that
-// model a purely numeric product can use IsNumeric to reject a lettered version
-// before comparing.
-package version
+// A Fortinet version is a "."-separated list of components, each an unsigned
+// integer or — when letters are permitted (the FortiSASE milestone scheme) — a
+// single lowercase letter. The two schemes share one comparison algorithm; a
+// numeric component meeting a milestone letter at the same position has no
+// defined cross-scheme order and yields ErrIncomparable.
+package core
 
 import (
 	"cmp"
@@ -23,8 +19,7 @@ import (
 
 // ErrIncomparable is returned by Compare when the two versions have no defined
 // order: a numeric component meets a milestone letter at the same position
-// (e.g. a build "1.2.1" against a milestone "1.2.a"), which spans Fortinet's
-// numeric and milestone-letter schemes.
+// (e.g. a build "1.2.1" against a milestone "1.2.a").
 var ErrIncomparable = errors.New("incomparable fortinet versions")
 
 type kind int
@@ -34,28 +29,22 @@ const (
 	kindLetter
 )
 
-// component is one "."-separated piece of a version: an unsigned number or a
-// single lowercase milestone letter.
 type component struct {
 	kind   kind
 	number uint64
 	letter byte
 }
 
-// Version is a parsed Fortinet version. Always construct it with NewVersion;
-// the zero value is not a valid version (it has no components, so String
-// returns "" and Compare against it is meaningless), and methods assume the
-// components were validated by NewVersion.
+// Version is a parsed Fortinet version.
 type Version struct {
 	components []component
 }
 
-// NewVersion parses a Fortinet version string. Each "."-separated component must
-// be unsigned digits (so a signed "+0"/"-1" or an overflowing number is
-// rejected) or a single lowercase letter; a multi-character / non-[a-z] token
-// (e.g. "alpha", "a10", "x"-style placeholders longer than one char) or an
-// empty component (a stray/leading/trailing dot) is an error.
-func NewVersion(ver string) (Version, error) {
+// Parse splits ver on "." and validates each component as unsigned digits (so a
+// signed "+0"/"-1" or an overflowing number is rejected) or, when allowLetters
+// is true, a single lowercase milestone letter. A multi-character / non-[a-z]
+// token or an empty component (a stray/leading/trailing dot) is an error.
+func Parse(ver string, allowLetters bool) (Version, error) {
 	if ver == "" {
 		return Version{}, fmt.Errorf("empty fortinet version")
 	}
@@ -66,25 +55,13 @@ func NewVersion(ver string) (Version, error) {
 			components = append(components, component{kind: kindNumber, number: n})
 			continue
 		}
-		if len(s) == 1 && s[0] >= 'a' && s[0] <= 'z' {
+		if allowLetters && len(s) == 1 && s[0] >= 'a' && s[0] <= 'z' {
 			components = append(components, component{kind: kindLetter, letter: s[0]})
 			continue
 		}
 		return Version{}, fmt.Errorf("unexpected fortinet version component %q in %q", s, ver)
 	}
 	return Version{components: components}, nil
-}
-
-// IsNumeric reports whether every component is numeric (the version carries no
-// milestone letter). A purely numeric product can use this to refuse a lettered
-// version (e.g. treating it as a non-match) before calling Compare.
-func (v Version) IsNumeric() bool {
-	for _, c := range v.components {
-		if c.kind != kindNumber {
-			return false
-		}
-	}
-	return true
 }
 
 // Compare returns -1, 0, or +1 for v < o, v == o, v > o. Numeric components
@@ -122,7 +99,7 @@ func (v Version) Compare(o Version) (int, error) {
 
 // tailSign reports whether the trailing components of the longer version make it
 // greater (1) or leave the two equal (0, a trailing-zero no-op). Components are
-// already validated by NewVersion, so a letter or non-zero number means greater.
+// already validated by Parse, so a letter or non-zero number means greater.
 func tailSign(comps []component) int {
 	for _, c := range comps {
 		if c.kind != kindNumber || c.number != 0 {

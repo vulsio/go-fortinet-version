@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	version "github.com/vulsio/go-fortinet-version"
+	version "github.com/vulsio/go-fortinet-version/nonnumeric"
 )
 
 func TestNewVersion(t *testing.T) {
@@ -15,7 +15,6 @@ func TestNewVersion(t *testing.T) {
 		wantErr bool
 	}{
 		{name: "numeric", ver: "7.4.3", want: "7.4.3"},
-		{name: "train", ver: "7", want: "7"},
 		{name: "milestone letter", ver: "25.2.a", want: "25.2.a"},
 		{name: "milestone letter patch", ver: "25.1.a.2", want: "25.1.a.2"},
 		{name: "empty", ver: "", wantErr: true},
@@ -26,7 +25,6 @@ func TestNewVersion(t *testing.T) {
 		{name: "multi-char milestone", ver: "25.2.alpha", wantErr: true},
 		{name: "letter+digits milestone", ver: "25.1.a10", wantErr: true},
 		{name: "build suffix", ver: "7.1-b5955", wantErr: true},
-		{name: "non-version", ver: "alpha", wantErr: true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -51,15 +49,8 @@ func TestVersion_Compare(t *testing.T) {
 		want    int
 		wantErr bool // expect ErrIncomparable
 	}{
-		{name: "v1 < v2", v1: "7.0.0", v2: "7.0.1", want: -1},
-		{name: "equal", v1: "7.2.0", v2: "7.2.0", want: 0},
-		{name: "v1 > v2", v1: "7.1.0", v2: "7.0.0", want: 1},
-		{name: "train minor < train minor", v1: "7.2", v2: "7.4", want: -1},
-		{name: "train major < train major", v1: "7", v2: "8", want: -1},
-		{name: "train equal", v1: "7.2", v2: "7.2", want: 0},
-		{name: "concrete within train lower bound (7.2.0 == 7.2)", v1: "7.2.0", v2: "7.2", want: 0},
-		{name: "concrete below next train (7.2.5 < 7.3)", v1: "7.2.5", v2: "7.3", want: -1},
-		{name: "pure-numeric trailing zero stays equal (7.2.0 == 7.2)", v1: "7.2.0", v2: "7.2", want: 0},
+		{name: "numeric v1 < v2", v1: "7.0.0", v2: "7.0.1", want: -1},
+		{name: "trailing zero stays equal (7.2.0 == 7.2)", v1: "7.2.0", v2: "7.2", want: 0},
 		{name: "bare train below its milestone build (25.2 < 25.2.a)", v1: "25.2", v2: "25.2.a", want: -1},
 		{name: "milestone above its bare train (25.2.a > 25.2)", v1: "25.2.a", v2: "25.2", want: 1},
 		{name: "milestone below next train (25.2.a < 25.3)", v1: "25.2.a", v2: "25.3", want: -1},
@@ -92,30 +83,6 @@ func TestVersion_Compare(t *testing.T) {
 			}
 			if got != tt.want {
 				t.Errorf("Compare(%q, %q) = %d, want %d", tt.v1, tt.v2, got, tt.want)
-			}
-		})
-	}
-}
-
-func TestVersion_IsNumeric(t *testing.T) {
-	tests := []struct {
-		ver  string
-		want bool
-	}{
-		{ver: "7.4.3", want: true},
-		{ver: "7.2", want: true},
-		{ver: "7.2.0", want: true},
-		{ver: "25.2.a", want: false},
-		{ver: "25.1.a.2", want: false},
-	}
-	for _, tt := range tests {
-		t.Run(tt.ver, func(t *testing.T) {
-			v, err := version.NewVersion(tt.ver)
-			if err != nil {
-				t.Fatalf("NewVersion(%q): %v", tt.ver, err)
-			}
-			if got := v.IsNumeric(); got != tt.want {
-				t.Errorf("IsNumeric(%q) = %v, want %v", tt.ver, got, tt.want)
 			}
 		})
 	}
