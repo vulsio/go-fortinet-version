@@ -77,7 +77,7 @@ func (v Version) Compare(o Version) (int, error) {
 	// one is the zero value used without NewVersion, which has no meaningful
 	// order — fail loudly rather than report a bogus result.
 	if len(a) == 0 || len(b) == 0 {
-		return 0, fmt.Errorf("compare uninitialized fortinet version (construct with NewVersion)")
+		return 0, fmt.Errorf("compare uninitialized version (construct with NewVersion)")
 	}
 	for i := 0; i < len(a) || i < len(b); i++ {
 		switch {
