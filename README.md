@@ -30,5 +30,9 @@ _, _ = s.Compare(m) // -1
 ```
 
 Each package exposes `NewVersion(string) (Version, error)`,
-`(Version).Compare(Version) (int, error)`, and `(Version).String()`. The shared
+`(Version).Compare(Version) (int, error)`, and `(Version).String()`. The
+`nonnumeric` package additionally exposes the `ErrIncomparable` sentinel,
+returned by `Compare` when a numeric component meets a milestone letter at the
+same position (e.g. `1.2.1` vs `1.2.a`); test for it with `errors.Is`. `numeric`
+versions are totally ordered, so `numeric.Compare` never returns it. The shared
 core lives in `internal/core`.
