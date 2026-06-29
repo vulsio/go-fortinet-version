@@ -46,7 +46,7 @@ type Version struct {
 // token or an empty component (a stray/leading/trailing dot) is an error.
 func Parse(ver string, allowLetters bool) (Version, error) {
 	if ver == "" {
-		return Version{}, fmt.Errorf("empty fortinet version")
+		return Version{}, fmt.Errorf("empty version")
 	}
 	ss := strings.Split(ver, ".")
 	components := make([]component, 0, len(ss))
@@ -59,7 +59,7 @@ func Parse(ver string, allowLetters bool) (Version, error) {
 			components = append(components, component{kind: kindLetter, letter: s[0]})
 			continue
 		}
-		return Version{}, fmt.Errorf("unexpected fortinet version component %q in %q", s, ver)
+		return Version{}, fmt.Errorf("invalid version component %q", s)
 	}
 	return Version{components: components}, nil
 }

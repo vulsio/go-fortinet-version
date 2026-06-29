@@ -5,11 +5,16 @@
 // uses.
 package nonnumeric
 
-import core "github.com/vulsio/go-fortinet-version/internal/core"
+import (
+	"fmt"
+
+	core "github.com/vulsio/go-fortinet-version/internal/core"
+)
 
 // ErrIncomparable is returned by Compare when the two versions have no defined
 // order: a numeric component meets a milestone letter at the same position
-// (e.g. a build "1.2.1" against a milestone "1.2.a").
+// (e.g. a build "1.2.1" against a milestone "1.2.a"). (numeric versions are
+// totally ordered, so only this package needs the sentinel.)
 var ErrIncomparable = core.ErrIncomparable
 
 // Version is a parsed non-numeric (milestone-letter) Fortinet version. Always
@@ -25,7 +30,7 @@ type Version struct {
 func NewVersion(ver string) (Version, error) {
 	v, err := core.Parse(ver, true)
 	if err != nil {
-		return Version{}, err
+		return Version{}, fmt.Errorf("parse nonnumeric version %q: %w", ver, err)
 	}
 	return Version{v: v}, nil
 }
